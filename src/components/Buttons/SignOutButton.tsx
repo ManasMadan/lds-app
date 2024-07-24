@@ -6,7 +6,16 @@ import { signOut } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-export default function SignOutButton(props: ButtonProps) {
+interface SignOutButtonProps extends ButtonProps {
+  loading?: React.ReactNode;
+  children?: React.ReactNode;
+}
+
+export default function SignOutButton({
+  loading,
+  children,
+  ...buttonProps
+}: SignOutButtonProps) {
   const mutation = useMutation({
     mutationFn: () => signOut(),
     onSuccess: () => {
@@ -16,14 +25,15 @@ export default function SignOutButton(props: ButtonProps) {
       toast.error("Something went wrong");
     },
   });
+
   return (
     <Button
       onClick={() => {
         mutation.mutate();
       }}
-      {...props}
+      {...buttonProps}
     >
-      {mutation.isPending ? "Signing Out" : "Sign Out"}
+      {mutation.isPending ? loading || children : children}
     </Button>
   );
 }
