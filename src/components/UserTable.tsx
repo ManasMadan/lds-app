@@ -170,7 +170,7 @@ const UserTableActions = ({
   role: Role | undefined;
   setRole: (role: Role | undefined) => void;
 }) => (
-  <div className="mb-4 flex justify-between items-center">
+  <div className="mb-4 flex flex-col gap-y-4 md:flex-row justify-between items-center">
     <div className="flex gap-2">
       <Button
         onClick={handleDeleteSelected}
