@@ -17,7 +17,12 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeClient>
+        <ThemeClient
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <AuthClient session={session}>{children}</AuthClient>
         </ThemeClient>
       </body>
