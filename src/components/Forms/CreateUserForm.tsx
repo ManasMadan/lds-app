@@ -3,7 +3,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { z } from "zod";
 import { CreateUserFormInputs, signUpSchema, userRoles } from "@/lib/schema";
 import toast from "react-hot-toast";
 import {
@@ -31,28 +30,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createUser } from "@/lib/helpers/createUser";
+import { createUser } from "@/lib/api/users";
+import { useCreateUser } from "@/hooks/useUsers";
 
 const CreateUserForm: React.FC = () => {
   const form = useForm<CreateUserFormInputs>({
     resolver: zodResolver(signUpSchema),
   });
 
-  const mutation = useMutation({
-    mutationFn: createUser,
-    onError: (error) => {
-      console.log(error);
-      toast.error("Error Creating User");
-    },
-    onSuccess: (data) => {
-      toast.success("User Created successfully");
-    },
-  });
+  const createUserMutation = useCreateUser();
 
   const onSubmit = (data: CreateUserFormInputs) => {
-    mutation.mutate(data);
+    createUserMutation.mutate(data, {
+      onSuccess: () => {
+        toast.success("User Created successfully");
+        form.reset();
+      },
+      onError: (error) => {
+        console.log(error);
+        toast.error("Error Creating User");
+      },
+    });
   };
-
   return (
     <Card className="w-[350px]">
       <CardHeader>
@@ -147,9 +146,9 @@ const CreateUserForm: React.FC = () => {
             <Button
               className="mt-0"
               type="submit"
-              disabled={mutation.isPending}
+              disabled={createUserMutation.isPending}
             >
-              {mutation.isPending ? "Creating User" : "Create User"}
+              {createUserMutation.isPending ? "Creating User" : "Create User"}
             </Button>
           </CardFooter>
         </form>

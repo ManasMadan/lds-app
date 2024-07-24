@@ -6,7 +6,12 @@ export const signInSchema = z.object({
   password: z.string(),
 });
 
-export const userRoles: Role[] = ["NONE", "SME", "QC", "ADMIN"];
+export const userRoles: [Role, ...Role[]] = [
+  "NONE",
+  "SME",
+  "QC",
+  "ADMIN",
+] as const;
 
 export const signUpSchema = z.object({
   name: z.string().min(3, "Name is required"),
@@ -19,5 +24,24 @@ export const signUpSchema = z.object({
     .default("NONE"),
 });
 
+export const editUserSchema = z.object({
+  name: z.string().min(3, "Name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z
+    .union([
+      z
+        .string()
+        .length(0, { message: "String must be either 0 char or min 8 char" }),
+      z.string().min(8),
+    ])
+    .optional(),
+  role: z
+    .enum(userRoles, {
+      invalid_type_error: "Invalid Role",
+    })
+    .default("NONE"),
+});
+
 export type CreateUserFormInputs = z.infer<typeof signUpSchema>;
 export type SignInFormInputs = z.infer<typeof signInSchema>;
+export type EditUserFormInputs = z.infer<typeof editUserSchema>;
