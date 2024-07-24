@@ -1,9 +1,11 @@
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
-import ThemeClient from "@/components/ThemeClient";
+import ThemeClient from "@/components/Providers/ThemeClient";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import AuthClient from "@/components/AuthClient";
+import AuthClient from "@/components/Providers/AuthClient";
+import QueryClient from "@/components/Providers/QueryClient";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +25,17 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AuthClient session={session}>{children}</AuthClient>
+          <QueryClient>
+            <AuthClient session={session}>
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  className: "dark:bg-gray-800 dark:text-gray-100",
+                }}
+              />
+              {children}
+            </AuthClient>
+          </QueryClient>
         </ThemeClient>
       </body>
     </html>

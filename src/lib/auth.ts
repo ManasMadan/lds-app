@@ -1,11 +1,9 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient, Role, User as PrismaUser } from "@prisma/client";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
 import { Adapter } from "next-auth/adapters";
-
-const prisma = new PrismaClient();
+import prisma from "./prisma";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -75,26 +73,26 @@ export const authOptions: NextAuthOptions = {
   events: {
     async signIn({ user }) {
       if (user.id) {
-        const existingSession = await prisma.session.findUnique({
-          where: { userId: user.id },
+        await prisma.session.deleteMany({
+          where: {
+            userId: user.id,
+          },
         });
 
-        if (existingSession) {
-          await prisma.session.update({
-            where: { id: existingSession.id },
-            data: {
-              expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-            },
-          });
-        } else {
-          await prisma.session.create({
-            data: {
-              userId: user.id,
-              expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-              sessionToken: crypto.randomUUID(),
-            },
-          });
-        }
+        await prisma.session.create({
+          data: {
+            userId: user.id,
+            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            sessionToken: crypto.randomUUID(),
+          },
+        });
+      }
+    },
+    async signOut({ session }) {
+      if (session.user.id) {
+        await prisma.session.deleteMany({
+          where: { userId: session.user.id },
+        });
       }
     },
   },
