@@ -10,13 +10,13 @@ import { DropdownMenuArrow } from "@radix-ui/react-dropdown-menu";
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger
+  CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-  TooltipProvider
+  TooltipProvider,
 } from "@/components/ui/tooltip";
 import {
   DropdownMenu,
@@ -24,14 +24,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-
-type Submenu = {
-  href: string;
-  label: string;
-  active: boolean;
-};
+import { Submenu } from "@/lib/menu-list";
 
 interface CollapseMenuButtonProps {
   icon: LucideIcon;
@@ -46,7 +41,7 @@ export function CollapseMenuButton({
   label,
   active,
   submenus,
-  isOpen
+  isOpen,
 }: CollapseMenuButtonProps) {
   const isSubmenuActive = submenus.some((submenu) => submenu.active);
   const [isCollapsed, setIsCollapsed] = useState<boolean>(isSubmenuActive);
@@ -98,7 +93,7 @@ export function CollapseMenuButton({
         </Button>
       </CollapsibleTrigger>
       <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-        {submenus.map(({ href, label, active }, index) => (
+        {submenus.map(({ href, label, active, icon: Icon }, index) => (
           <Button
             key={index}
             variant={active ? "secondary" : "ghost"}
@@ -107,7 +102,7 @@ export function CollapseMenuButton({
           >
             <Link href={href}>
               <span className="mr-4 ml-2">
-                <Dot size={18} />
+                {Icon ? <Icon size={18} /> : <Dot size={18} />}
               </span>
               <p
                 className={cn(

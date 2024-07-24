@@ -1,98 +1,52 @@
 import { Role } from "@prisma/client";
+import { User2, UserPlus, Users } from "lucide-react";
 
-type Submenu = {
+export type Submenu = {
   href: string;
   label: string;
   active: boolean;
+  icon?: any;
 };
 
-type Menu = {
+export type Menu = {
   href: string;
   label: string;
   active: boolean;
   icon: any;
   submenus: Submenu[];
-  userRolesList: Role[];
 };
 
-type Group = {
+export type Group = {
   groupLabel: string;
   menus: Menu[];
   userRolesList: Role[];
 };
 
 export function getMenuList(pathname: string): Group[] {
-  return [];
+  return [
+    {
+      groupLabel: "",
+      menus: [
+        {
+          label: "Manage Users",
+          active: false,
+          icon: Users,
+          submenus: [
+            {
+              label: "New User",
+              active: pathname === "/admin/new-user",
+              href: "/admin/new-user",
+            },
+            {
+              label: "Edit Users",
+              active: pathname === "/admin/edit-users",
+              href: "/admin/edit-users",
+            },
+          ],
+          href: "/admin/manage-users",
+        },
+      ],
+      userRolesList: ["ADMIN"],
+    },
+  ];
 }
-// export function getMenuList(pathname: string): Group[] {
-//   return [
-//     {
-//       groupLabel: "",
-//       menus: [
-//         {
-//           href: "/dashboard",
-//           label: "Dashboard",
-//           active: pathname.includes("/dashboard"),
-//           icon: LayoutGrid,
-//           submenus: [],
-//         },
-//       ],
-//     },
-//     {
-//       groupLabel: "Contents",
-//       menus: [
-//         {
-//           href: "",
-//           label: "Posts",
-//           active: pathname.includes("/posts"),
-//           icon: SquarePen,
-//           submenus: [
-//             {
-//               href: "/posts",
-//               label: "All Posts",
-//               active: pathname === "/posts",
-//             },
-//             {
-//               href: "/posts/new",
-//               label: "New Post",
-//               active: pathname === "/posts/new",
-//             },
-//           ],
-//         },
-//         {
-//           href: "/categories",
-//           label: "Categories",
-//           active: pathname.includes("/categories"),
-//           icon: Bookmark,
-//           submenus: [],
-//         },
-//         {
-//           href: "/tags",
-//           label: "Tags",
-//           active: pathname.includes("/tags"),
-//           icon: Tag,
-//           submenus: [],
-//         },
-//       ],
-//     },
-//     {
-//       groupLabel: "Settings",
-//       menus: [
-//         {
-//           href: "/users",
-//           label: "Users",
-//           active: pathname.includes("/users"),
-//           icon: Users,
-//           submenus: [],
-//         },
-//         {
-//           href: "/account",
-//           label: "Account",
-//           active: pathname.includes("/account"),
-//           icon: Settings,
-//           submenus: [],
-//         },
-//       ],
-//     },
-//   ];
-// }

@@ -59,18 +59,7 @@ export function Menu({ isOpen, userRole }: MenuProps) {
                   <p className="pb-2"></p>
                 )}
                 {menus.map(
-                  (
-                    {
-                      href,
-                      label,
-                      icon: Icon,
-                      active,
-                      submenus,
-                      userRolesList,
-                    },
-                    index
-                  ) => {
-                    if (!userRolesList.includes(userRole)) return;
+                  ({ href, label, icon: Icon, active, submenus }, index) => {
                     return submenus.length === 0 ? (
                       <div className="w-full" key={index}>
                         <TooltipProvider disableHoverableContent>
