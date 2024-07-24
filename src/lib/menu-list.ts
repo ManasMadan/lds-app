@@ -1,5 +1,4 @@
 import { Role } from "@prisma/client";
-import { Library } from "lucide-react";
 
 type Submenu = {
   href: string;
@@ -23,22 +22,7 @@ type Group = {
 };
 
 export function getMenuList(pathname: string): Group[] {
-  return [
-    {
-      groupLabel: "",
-      userRolesList: ["ADMIN"],
-      menus: [
-        {
-          href: "/my-images",
-          label: "My Images",
-          active: pathname.includes("/my-images"),
-          icon: Library,
-          submenus: [],
-          userRolesList: ["ADMIN"],
-        },
-      ],
-    },
-  ];
+  return [];
 }
 // export function getMenuList(pathname: string): Group[] {
 //   return [

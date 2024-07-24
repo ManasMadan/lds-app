@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 import { LogOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -36,9 +35,10 @@ export function UserNav({
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
-                className="relative h-8 w-8 rounded-full"
+                size="icon"
+                className="relative  rounded-full"
               >
-                <Avatar className="h-8 w-8">
+                <Avatar>
                   <AvatarFallback className="bg-transparent">
                     {user.name[0].toUpperCase()}
                   </AvatarFallback>
@@ -53,8 +53,9 @@ export function UserNav({
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col gap-y-2">
-            {/* <p className="text-sm font-medium leading-none">{email}</p> */}
-            {/* <p className="text-sm font-medium leading-none"></p> */}
+            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-sm font-medium leading-none">{user.email}</p>
+            <p className="text-sm font-medium leading-none">{user.role}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

@@ -3,6 +3,7 @@ import { UserNav } from "@/components/layout/user-nav";
 import { SheetMenu } from "@/components/layout/sheet-menu";
 import { Role } from "@prisma/client";
 import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 interface NavbarProps {
   title: string;
@@ -10,7 +11,7 @@ interface NavbarProps {
 }
 
 export async function Navbar({ title, userRole }: NavbarProps) {
-  const session = (await getServerSession())!;
+  const session = (await getServerSession(authOptions))!;
 
   return (
     <header className="sticky top-0 z-10 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">

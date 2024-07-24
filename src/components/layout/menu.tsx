@@ -155,10 +155,7 @@ export function Menu({ isOpen, userRole }: MenuProps) {
                     className="w-full justify-center h-10 my-5"
                   >
                     <span className={cn(isOpen === false ? "" : "mr-4")}>
-                      <LogOut
-                        size={18}
-                        className="w-4 h-4 mr-3 text-muted-foreground"
-                      />
+                      <LogOut size={18} />
                     </span>
                     <p
                       className={cn(
