@@ -30,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createUser } from "@/lib/api/users";
 import { useCreateUser } from "@/hooks/useUsers";
 
 const CreateUserForm: React.FC = () => {
@@ -41,6 +40,8 @@ const CreateUserForm: React.FC = () => {
   const createUserMutation = useCreateUser();
 
   const onSubmit = (data: CreateUserFormInputs) => {
+    console.log(data);
+    return;
     createUserMutation.mutate(data, {
       onSuccess: () => {
         toast.success("User Created successfully");
@@ -107,12 +108,15 @@ const CreateUserForm: React.FC = () => {
             />
             <FormField
               control={form.control}
-              name="password"
+              name="role"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>User Role</FormLabel>
                   <FormControl>
-                    <Select>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select user role" />
                       </SelectTrigger>
