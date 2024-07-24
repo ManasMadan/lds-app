@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css";
+import ThemeClient from "@/components/ThemeClient";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import AuthClient from "@/components/AuthClient";
@@ -14,9 +15,11 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions);
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <AuthClient session={session}>{children}</AuthClient>
+        <ThemeClient>
+          <AuthClient session={session}>{children}</AuthClient>
+        </ThemeClient>
       </body>
     </html>
   );
