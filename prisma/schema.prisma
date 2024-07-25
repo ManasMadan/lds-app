@@ -21,7 +21,7 @@ model UserDailyStats {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt @default(now())
 
-  @@unique([date, userId])
+  @@unique([date, userId, role])
 }
 
 model User {

@@ -88,6 +88,7 @@ export async function deleteQuestions(ids: string[]) {
     },
     select: {
       id: true,
+      submittedById: true,
       imageS3Key: true,
     },
   });
@@ -116,6 +117,31 @@ export async function deleteQuestions(ids: string[]) {
       status: "PENDING",
     },
   });
+
+  if (questionsToDelete.length > 0) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const userId = questionsToDelete[0].submittedById;
+
+    await prisma.userDailyStats.upsert({
+      where: {
+        date_userId_role: {
+          date: today,
+          userId: userId,
+          role: "SME",
+        },
+      },
+      update: {
+        questionsSubmitted: { decrement: questionsToDelete.length },
+      },
+      create: {
+        date: today,
+        userId: userId,
+        role: "SME",
+        questionsSubmitted: -1 * questionsToDelete.length,
+      },
+    });
+  }
 }
 
 export async function uploadQuestions(
@@ -144,5 +170,23 @@ export async function uploadQuestions(
     return question.id;
   });
 
-  return Promise.all(uploadPromises);
+  const uploadedQuestionIds = await Promise.all(uploadPromises);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  await prisma.userDailyStats.upsert({
+    where: { date_userId_role: { date: today, userId: userId, role: "SME" } },
+    update: {
+      questionsSubmitted: { increment: images.length },
+    },
+    create: {
+      date: today,
+      userId: userId,
+      role: "SME",
+      questionsSubmitted: images.length,
+    },
+  });
+
+  return uploadedQuestionIds;
 }

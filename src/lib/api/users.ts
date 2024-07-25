@@ -17,7 +17,7 @@ async function hashPassword(plainPassword: string) {
 }
 export async function createUser(inputs: CreateUserFormInputs) {
   const hashed = await hashPassword(inputs.password);
-  return prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       email: inputs.email,
       name: inputs.name,
@@ -25,6 +25,19 @@ export async function createUser(inputs: CreateUserFormInputs) {
       role: inputs.role as Role,
     },
   });
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  await prisma.userDailyStats.create({
+    data: {
+      date: today,
+      userId: user.id,
+      role: user.role,
+    },
+  });
+
+  return user;
 }
 
 export type SortField = "name" | "email" | "role" | "createdAt";
