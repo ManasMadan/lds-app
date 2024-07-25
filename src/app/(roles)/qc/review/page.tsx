@@ -7,8 +7,12 @@ import React from "react";
 export default async function page() {
   const session = await getServerSession(authOptions);
   return (
-    <ContentLayout title="SME">
-      <QuestionTable userId={session?.user.id!} role={session?.user.role!} />
+    <ContentLayout title="QC">
+      <QuestionTable
+        role={session?.user.role!}
+        mandatoryStatus="PENDING"
+        reviewerId={session?.user.id}
+      />
     </ContentLayout>
   );
 }

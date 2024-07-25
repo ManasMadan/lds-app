@@ -5,6 +5,7 @@ import {
   uploadQuestions,
   SortField,
   SortOrder,
+  updateQuestionStatus,
 } from "@/lib/api/questions";
 import { Status } from "@prisma/client";
 
@@ -76,6 +77,27 @@ export function useDeleteQuestions() {
 
   return useMutation({
     mutationFn: deleteQuestions,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["questions"] });
+    },
+  });
+}
+
+export function useUpdateQuestionStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      questionIds,
+      status,
+      reviewComment,
+      reviewerId,
+    }: {
+      questionIds: string[];
+      status: "APPROVED" | "REJECTED";
+      reviewComment: string;
+      reviewerId: string;
+    }) => updateQuestionStatus(questionIds, status, reviewComment, reviewerId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questions"] });
     },

@@ -196,3 +196,76 @@ export async function uploadQuestions(
 
   return uploadedQuestionIds;
 }
+
+export async function updateQuestionStatus(
+  questionIds: string[],
+  status: "APPROVED" | "REJECTED",
+  reviewComment: string,
+  reviewerId: string
+) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const questions = await prisma.question.findMany({
+    where: { id: { in: questionIds } },
+    select: { id: true, submittedById: true },
+  });
+
+  const updatePromises = questions.map((question) =>
+    prisma.question.update({
+      where: { id: question.id },
+      data: { status, reviewComment, reviewedById: reviewerId },
+    })
+  );
+
+  await Promise.all(updatePromises);
+
+  // Update QC stats
+  await prisma.userDailyStats.upsert({
+    where: {
+      date_userId_role: {
+        date: today,
+        userId: reviewerId,
+        role: "QC",
+      },
+    },
+    update: {
+      questionsReviewed: { increment: questionIds.length },
+      [status === "APPROVED" ? "questionsApproved" : "questionsRejected"]: {
+        increment: questionIds.length,
+      },
+    },
+    create: {
+      date: today,
+      userId: reviewerId,
+      role: "QC",
+      questionsReviewed: questionIds.length,
+      [status === "APPROVED" ? "questionsApproved" : "questionsRejected"]:
+        questionIds.length,
+    },
+  });
+
+  // Update SME stats
+  for (const question of questions) {
+    await prisma.userDailyStats.upsert({
+      where: {
+        date_userId_role: {
+          date: today,
+          userId: question.submittedById,
+          role: "SME",
+        },
+      },
+      update: {
+        [status === "APPROVED" ? "questionsApproved" : "questionsRejected"]: {
+          increment: 1,
+        },
+      },
+      create: {
+        date: today,
+        userId: question.submittedById,
+        role: "SME",
+        [status === "APPROVED" ? "questionsApproved" : "questionsRejected"]: 1,
+      },
+    });
+  }
+}
