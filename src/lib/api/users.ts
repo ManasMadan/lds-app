@@ -25,6 +25,7 @@ export async function createUser(inputs: CreateUserFormInputs) {
       role: inputs.role as Role,
     },
   });
+  if (user.role === "ADMIN" || user.role === "NONE") return user;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -105,6 +106,10 @@ export async function updateUser(
   id: string,
   data: Partial<EditUserFormInputs>
 ) {
+  const prevUser = await prisma.user.findUnique({ where: { id } });
+  if (!prevUser) {
+    throw new Error("User not found");
+  }
   const updateData: Prisma.UserUpdateInput = {
     name: data.name,
     email: data.email,
@@ -113,6 +118,21 @@ export async function updateUser(
 
   if (data.password && data.password.trim() !== "") {
     updateData.password = await hashPassword(data.password);
+  }
+  if (
+    (prevUser.role === "ADMIN" || prevUser.role === "NONE") &&
+    (data.role === "SME" || data.role === "QC")
+  ) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    await prisma.userDailyStats.create({
+      data: {
+        date: today,
+        userId: id,
+        role: data.role,
+      },
+    });
   }
 
   return await prisma.user.update({
