@@ -93,6 +93,7 @@ const SignInForm: React.FC = () => {
                     <Input
                       autoComplete="off"
                       placeholder="password"
+                      type="password"
                       {...field}
                     />
                   </FormControl>
