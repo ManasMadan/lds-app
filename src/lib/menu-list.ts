@@ -43,7 +43,7 @@ export function getMenuList(pathname: string): Group[] {
               href: "/admin/edit-users",
             },
           ],
-          href: "/admin/manage-users",
+          href: "/admin",
         },
       ],
       userRolesList: ["ADMIN"],
@@ -74,10 +74,36 @@ export function getMenuList(pathname: string): Group[] {
               href: "/sme/edit-questions",
             },
           ],
-          href: "/sme/manage",
+          href: "/sme",
         },
       ],
       userRolesList: ["SME"],
+    },
+    {
+      groupLabel: "",
+      menus: [
+        {
+          label: "Home",
+          active: false,
+          icon: Home,
+          submenus: [],
+          href: "/qc",
+        },
+        {
+          label: "Review Questions",
+          active: false,
+          icon: Users,
+          submenus: [
+            {
+              label: "All",
+              active: pathname === "/qc/review",
+              href: "/qc/review",
+            },
+          ],
+          href: "/qc",
+        },
+      ],
+      userRolesList: ["QC"],
     },
   ];
 }
