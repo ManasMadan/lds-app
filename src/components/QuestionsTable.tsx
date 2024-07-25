@@ -516,7 +516,11 @@ const DeleteQuestionsDialog = ({
         <p>Are you sure you want to delete the selected questions?</p>
         <p>
           Number of questions to delete:{" "}
-          {deleteConfirmation.questionsToDelete.length}
+          {
+            deleteConfirmation.questionsToDelete.filter(
+              (question) => question.status === "PENDING"
+            ).length
+          }
         </p>
         <DialogFooter className="flex justify-end gap-4">
           <Button
