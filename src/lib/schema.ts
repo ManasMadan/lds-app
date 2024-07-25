@@ -42,6 +42,14 @@ export const editUserSchema = z.object({
     .default("NONE"),
 });
 
+import { Status } from "@prisma/client";
+
+export const questionStatuses: [Status, ...Status[]] = [
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+];
+
 export type CreateUserFormInputs = z.infer<typeof signUpSchema>;
 export type SignInFormInputs = z.infer<typeof signInSchema>;
 export type EditUserFormInputs = z.infer<typeof editUserSchema>;

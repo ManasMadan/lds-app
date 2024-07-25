@@ -48,7 +48,7 @@ model Session {
 
 model Question {
   id           String   @id @default(cuid())
-  mediaURL     String?
+  imageS3Key   String
   status       Status   @default(PENDING)
   submittedBy  User     @relation("SubmittedBy", fields: [submittedById], references: [id])
   submittedById String

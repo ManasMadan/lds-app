@@ -40,8 +40,6 @@ const CreateUserForm: React.FC = () => {
   const createUserMutation = useCreateUser();
 
   const onSubmit = (data: CreateUserFormInputs) => {
-    console.log(data);
-    return;
     createUserMutation.mutate(data, {
       onSuccess: () => {
         toast.success("User Created successfully");
