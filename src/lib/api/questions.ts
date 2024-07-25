@@ -28,6 +28,7 @@ export async function getQuestions({
   status,
   dateFrom,
   dateTo,
+  submittedById,
 }: {
   page?: number;
   perPage?: number;
@@ -37,6 +38,7 @@ export async function getQuestions({
   status?: Status;
   dateFrom: Date | undefined;
   dateTo: Date | undefined;
+  submittedById: string | undefined;
 }) {
   const skip = (page - 1) * perPage;
   const take = perPage;
@@ -61,6 +63,10 @@ export async function getQuestions({
     if (dateTo) {
       where.createdAt.lte = dateTo;
     }
+  }
+
+  if (submittedById) {
+    where.submittedById = submittedById;
   }
 
   const [questions, totalCount] = await Promise.all([

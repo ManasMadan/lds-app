@@ -38,7 +38,7 @@ import S3ImageComponent from "./S3ImageComponent";
 
 const statuses: Status[] = ["PENDING", "APPROVED", "REJECTED"];
 
-export function QuestionTable() {
+export function QuestionTable({ userId }: { userId: string }) {
   const [page, setPage] = useState(1);
   const [sortField, setSortField] = useState<SortField>("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
@@ -63,6 +63,7 @@ export function QuestionTable() {
     status,
     dateFrom: dateRange?.from,
     dateTo: dateRange?.to,
+    submittedById: userId,
   });
 
   const deleteQuestionsMutation = useDeleteQuestions();

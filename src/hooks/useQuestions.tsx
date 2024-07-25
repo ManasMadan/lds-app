@@ -29,6 +29,7 @@ export function useQuestions({
   status,
   dateFrom,
   dateTo,
+  submittedById,
 }: {
   page: number;
   perPage: number;
@@ -38,6 +39,7 @@ export function useQuestions({
   status: Status | undefined;
   dateFrom: Date | undefined;
   dateTo: Date | undefined;
+  submittedById: string | undefined;
 }) {
   return useQuery({
     queryKey: [
@@ -51,6 +53,7 @@ export function useQuestions({
         status,
         dateFrom,
         dateTo,
+        submittedById,
       },
     ],
     queryFn: () =>
@@ -63,6 +66,7 @@ export function useQuestions({
         status,
         dateFrom,
         dateTo,
+        submittedById,
       }),
   });
 }
