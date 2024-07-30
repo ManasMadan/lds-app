@@ -7,11 +7,19 @@ export async function GET() {
     });
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(18, 30, 0, 0);
 
     for (const user of users) {
-      await prisma.userDailyStats.create({
-        data: {
+      await prisma.userDailyStats.upsert({
+        where: {
+          date_userId_role: {
+            date: today,
+            userId: user.id,
+            role: user.role,
+          },
+        },
+        update: {},
+        create: {
           date: today,
           userId: user.id,
           role: user.role,

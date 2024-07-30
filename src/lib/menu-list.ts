@@ -1,5 +1,5 @@
 import { Role } from "@prisma/client";
-import { Home, User2, UserPlus, Users } from "lucide-react";
+import { GitGraph, Home, User2, UserPlus, Users } from "lucide-react";
 
 export type Submenu = {
   href: string;
@@ -76,6 +76,13 @@ export function getMenuList(pathname: string): Group[] {
           ],
           href: "/sme",
         },
+        {
+          label: "Stats",
+          active: pathname === "/sme/stats",
+          icon: GitGraph,
+          submenus: [],
+          href: "/sme/stats",
+        },
       ],
       userRolesList: ["SME"],
     },
@@ -111,6 +118,13 @@ export function getMenuList(pathname: string): Group[] {
             },
           ],
           href: "/qc",
+        },
+        {
+          label: "Stats",
+          active: pathname === "/qc/stats",
+          icon: GitGraph,
+          submenus: [],
+          href: "/qc/stats",
         },
       ],
       userRolesList: ["QC"],
