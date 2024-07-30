@@ -52,6 +52,24 @@ export function getMenuList(pathname: string): Group[] {
           submenus: [],
           href: "/admin/questions",
         },
+        {
+          label: "Stats",
+          active: false,
+          icon: GitGraph,
+          submenus: [
+            {
+              label: "All",
+              active: pathname === "/admin/stats",
+              href: "/admin/stats",
+            },
+            {
+              label: "By Users",
+              active: pathname === "/admin/stats/by-user",
+              href: "/admin/stats/by-user",
+            },
+          ],
+          href: "/admin",
+        },
       ],
       userRolesList: ["ADMIN"],
     },
