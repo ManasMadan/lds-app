@@ -407,3 +407,44 @@ export async function fetchQCStats(qcId: string) {
     },
   };
 }
+
+export async function getAdminStatsData() {
+  const now = new Date();
+  const todayIST = new Date(now.getTime() + 5.5 * 60 * 60 * 1000);
+  todayIST.setUTCHours(18, 30, 0, 0);
+
+  const totalUsers = await prisma.user.count();
+  const totalQuestions = await prisma.question.count();
+  const pendingTasks = await prisma.question.count({
+    where: { status: "PENDING" },
+  });
+
+  const todayStats = await prisma.userDailyStats.groupBy({
+    by: ["role"],
+    where: {
+      date: todayIST,
+    },
+    _sum: {
+      questionsSubmitted: true,
+      questionsApproved: true,
+      questionsRejected: true,
+      questionsReviewed: true,
+    },
+  });
+
+  const todayStatsSum = todayStats.reduce(
+    (acc, curr) => {
+      acc.pending += curr._sum.questionsSubmitted || 0;
+      acc.approved += curr._sum.questionsReviewed || 0;
+      return acc;
+    },
+    { pending: 0, approved: 0, rejected: 0 }
+  );
+
+  return {
+    totalUsers,
+    totalQuestions,
+    pendingTasks,
+    todayStats: todayStatsSum,
+  };
+}
