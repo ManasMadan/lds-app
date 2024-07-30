@@ -294,3 +294,94 @@ export async function updateQuestionStatus(
       });
   }
 }
+
+export async function getAdminQuestions({
+  page = 1,
+  perPage = 10,
+  sortField = "createdAt",
+  sortOrder = "desc",
+  searchTerm = "",
+  status,
+  dateFrom,
+  dateTo,
+  submittedById,
+  reviewedById,
+}: {
+  page?: number;
+  perPage?: number;
+  sortField?: SortField;
+  sortOrder?: SortOrder;
+  searchTerm?: string;
+  status?: Status;
+  dateFrom?: Date;
+  dateTo?: Date;
+  submittedById?: string;
+  reviewedById?: string;
+}) {
+  const skip = (page - 1) * perPage;
+  const take = perPage;
+
+  const where: any = {};
+
+  if (searchTerm) {
+    where.OR = [
+      { reviewComment: { contains: searchTerm, mode: "insensitive" } },
+      { submittedBy: { name: { contains: searchTerm, mode: "insensitive" } } },
+      { submittedBy: { email: { contains: searchTerm, mode: "insensitive" } } },
+      { reviewedBy: { name: { contains: searchTerm, mode: "insensitive" } } },
+      { reviewedBy: { email: { contains: searchTerm, mode: "insensitive" } } },
+    ];
+  }
+
+  if (status) {
+    where.status = status;
+  }
+
+  if (dateFrom || dateTo) {
+    where.createdAt = {};
+    if (dateFrom) {
+      where.createdAt.gte = dateFrom;
+    }
+    if (dateTo) {
+      where.createdAt.lte = dateTo;
+    }
+  }
+
+  if (submittedById) {
+    where.submittedById = submittedById;
+  }
+
+  if (reviewedById) {
+    where.reviewedById = reviewedById;
+  }
+
+  const [questions, totalCount] = await Promise.all([
+    prisma.question.findMany({
+      where,
+      skip,
+      take,
+      orderBy: { [sortField]: sortOrder },
+      include: {
+        submittedBy: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        reviewedBy: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    }),
+    prisma.question.count({ where }),
+  ]);
+
+  return {
+    questions,
+    totalCount,
+    totalPages: Math.ceil(totalCount / perPage),
+  };
+}

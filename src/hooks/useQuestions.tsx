@@ -11,6 +11,7 @@ import {
   SortField,
   SortOrder,
   updateQuestionStatus,
+  getAdminQuestions,
 } from "@/lib/api/questions";
 import { Status } from "@prisma/client";
 
@@ -183,5 +184,60 @@ export function useQuestionsQC({
         includeSmeInfo: true,
         reviewedById,
       }) as Promise<QuestionsSubmittedByResponse>,
+  });
+}
+
+export function useAdminQuestions({
+  page,
+  perPage,
+  sortField,
+  sortOrder,
+  searchTerm,
+  status,
+  dateFrom,
+  dateTo,
+  submittedById,
+  reviewedById,
+}: {
+  page: number;
+  perPage: number;
+  sortField: SortField;
+  sortOrder: SortOrder;
+  searchTerm: string;
+  status: Status | undefined;
+  dateFrom: Date | undefined;
+  dateTo: Date | undefined;
+  submittedById: string | undefined;
+  reviewedById: string | undefined;
+}) {
+  return useQuery({
+    queryKey: [
+      "adminQuestions",
+      {
+        page,
+        perPage,
+        sortField,
+        sortOrder,
+        searchTerm,
+        status,
+        dateFrom,
+        dateTo,
+        submittedById,
+        reviewedById,
+      },
+    ],
+    queryFn: () =>
+      getAdminQuestions({
+        page,
+        perPage,
+        sortField,
+        sortOrder,
+        searchTerm,
+        status,
+        dateFrom,
+        dateTo,
+        submittedById,
+        reviewedById,
+      }),
   });
 }
