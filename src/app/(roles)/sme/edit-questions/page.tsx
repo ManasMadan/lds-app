@@ -1,5 +1,5 @@
 import { ContentLayout } from "@/components/layout/content-layout";
-import { QuestionTable } from "@/components/QuestionsTable";
+import { SMEQuestionTable } from "@/components/SMEQuestionTable";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import React from "react";
@@ -8,7 +8,7 @@ export default async function page() {
   const session = await getServerSession(authOptions);
   return (
     <ContentLayout title="SME">
-      <QuestionTable userId={session?.user.id!} role={session?.user.role!} />
+      <SMEQuestionTable userId={session?.user.id!} />
     </ContentLayout>
   );
 }

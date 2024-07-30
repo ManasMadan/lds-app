@@ -1,4 +1,9 @@
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useQuery,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import {
   getQuestions,
   deleteQuestions,
@@ -8,6 +13,26 @@ import {
   updateQuestionStatus,
 } from "@/lib/api/questions";
 import { Status } from "@prisma/client";
+
+type SubmittedBy = {
+  name: string;
+  email: string;
+};
+
+export type QuestionSubmittedBy = {
+  id: string;
+  imageS3Key: string;
+  status: Status;
+  createdAt: Date;
+  reviewComment: string | null;
+  submittedBy?: SubmittedBy;
+};
+
+type QuestionsSubmittedByResponse = {
+  questions: QuestionSubmittedBy[];
+  totalCount: number;
+  totalPages: number;
+};
 
 export function useCreateQuestion() {
   const queryClient = useQueryClient();
@@ -21,7 +46,7 @@ export function useCreateQuestion() {
   });
 }
 
-export function useQuestions({
+export function useQuestionsSME({
   page,
   perPage,
   sortField,
@@ -101,5 +126,62 @@ export function useUpdateQuestionStatus() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questions"] });
     },
+  });
+}
+
+export function useQuestionsQC({
+  page,
+  perPage,
+  sortField,
+  sortOrder,
+  searchTerm,
+  dateFrom,
+  dateTo,
+  reviewedById,
+  status,
+  smeId,
+}: {
+  page: number;
+  perPage: number;
+  sortField: SortField;
+  sortOrder: SortOrder;
+  searchTerm: string;
+  dateFrom: Date | undefined;
+  dateTo: Date | undefined;
+  reviewedById?: string;
+  status: Status;
+  smeId?: string;
+}): UseQueryResult<QuestionsSubmittedByResponse, Error> {
+  return useQuery<QuestionsSubmittedByResponse, Error>({
+    queryKey: [
+      "questions",
+      {
+        page,
+        perPage,
+        sortField,
+        sortOrder,
+        searchTerm,
+        status,
+        dateFrom,
+        dateTo,
+        includeSmeInfo: true,
+        reviewedById,
+        smeId,
+      },
+    ],
+    queryFn: () =>
+      getQuestions({
+        page,
+        perPage,
+        sortField,
+        sortOrder,
+        searchTerm,
+        status,
+        dateFrom,
+        dateTo,
+        submittedById: smeId,
+        includeSmeInfo: true,
+        reviewedById,
+      }) as Promise<QuestionsSubmittedByResponse>,
   });
 }

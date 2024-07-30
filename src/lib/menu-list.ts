@@ -90,14 +90,24 @@ export function getMenuList(pathname: string): Group[] {
           href: "/qc",
         },
         {
-          label: "Review Questions",
+          label: "Questions",
           active: false,
           icon: Users,
           submenus: [
             {
-              label: "All",
+              label: "Review All",
               active: pathname === "/qc/review",
               href: "/qc/review",
+            },
+            {
+              label: "Reviewed by me",
+              active: pathname === "/qc/my-reviewed",
+              href: "/qc/my-reviewed",
+            },
+            {
+              label: "Reviewed by users",
+              active: pathname === "/qc/by-users",
+              href: "/qc/by-users",
             },
           ],
           href: "/qc",

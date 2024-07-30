@@ -29,6 +29,8 @@ export async function getQuestions({
   dateFrom,
   dateTo,
   submittedById,
+  includeSmeInfo = false,
+  reviewedById,
 }: {
   page?: number;
   perPage?: number;
@@ -39,6 +41,8 @@ export async function getQuestions({
   dateFrom: Date | undefined;
   dateTo: Date | undefined;
   submittedById: string | undefined;
+  includeSmeInfo?: boolean;
+  reviewedById?: string;
 }) {
   const skip = (page - 1) * perPage;
   const take = perPage;
@@ -69,12 +73,26 @@ export async function getQuestions({
     where.submittedById = submittedById;
   }
 
+  if (reviewedById) {
+    where.reviewedById = reviewedById;
+  }
+
   const [questions, totalCount] = await Promise.all([
     prisma.question.findMany({
       where,
       skip,
       take,
       orderBy: { [sortField]: sortOrder },
+      include: includeSmeInfo
+        ? {
+            submittedBy: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          }
+        : undefined,
     }),
     prisma.question.count({ where }),
   ]);
@@ -208,8 +226,12 @@ export async function updateQuestionStatus(
 
   const questions = await prisma.question.findMany({
     where: { id: { in: questionIds } },
-    select: { id: true, submittedById: true },
+    select: { id: true, submittedById: true, status: true },
   });
+
+  const newUpdates = questions.filter(
+    (question) => question.status === "PENDING"
+  );
 
   const updatePromises = questions.map((question) =>
     prisma.question.update({
@@ -230,42 +252,45 @@ export async function updateQuestionStatus(
       },
     },
     update: {
-      questionsReviewed: { increment: questionIds.length },
+      questionsReviewed: { increment: newUpdates.length },
       [status === "APPROVED" ? "questionsApproved" : "questionsRejected"]: {
-        increment: questionIds.length,
+        increment: newUpdates.length,
       },
     },
     create: {
       date: today,
       userId: reviewerId,
       role: "QC",
-      questionsReviewed: questionIds.length,
+      questionsReviewed: newUpdates.length,
       [status === "APPROVED" ? "questionsApproved" : "questionsRejected"]:
-        questionIds.length,
+        newUpdates.length,
     },
   });
 
   // Update SME stats
-  for (const question of questions) {
-    await prisma.userDailyStats.upsert({
-      where: {
-        date_userId_role: {
+  for (const question of newUpdates) {
+    if (question)
+      await prisma.userDailyStats.upsert({
+        where: {
+          date_userId_role: {
+            date: today,
+            userId: question.submittedById,
+            role: "SME",
+          },
+        },
+        update: {
+          [status === "APPROVED" ? "questionsApproved" : "questionsRejected"]: {
+            increment: 1,
+          },
+        },
+        create: {
           date: today,
           userId: question.submittedById,
           role: "SME",
+          [status === "APPROVED"
+            ? "questionsApproved"
+            : "questionsRejected"]: 1,
         },
-      },
-      update: {
-        [status === "APPROVED" ? "questionsApproved" : "questionsRejected"]: {
-          increment: 1,
-        },
-      },
-      create: {
-        date: today,
-        userId: question.submittedById,
-        role: "SME",
-        [status === "APPROVED" ? "questionsApproved" : "questionsRejected"]: 1,
-      },
-    });
+      });
   }
 }

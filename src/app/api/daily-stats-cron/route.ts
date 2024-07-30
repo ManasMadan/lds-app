@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 
-export async function POST() {
+export async function GET() {
   try {
     const users = await prisma.user.findMany({
       where: { role: { in: ["SME", "QC"] } },
