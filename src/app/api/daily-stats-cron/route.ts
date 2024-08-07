@@ -1,3 +1,5 @@
+export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 import prisma from "@/lib/prisma";
 
 export async function GET() {
@@ -5,7 +7,6 @@ export async function GET() {
     const users = await prisma.user.findMany({
       where: { role: { in: ["SME", "QC"] } },
     });
-
     const today = new Date();
     today.setUTCHours(18, 30, 0, 0);
 
