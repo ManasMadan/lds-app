@@ -33,6 +33,8 @@ import { DateRange } from "react-day-picker";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import S3ImageComponent from "./S3ImageComponent";
 import { CommentDialog } from "./Forms/CommentDialogForm";
+import { Badge } from "./ui/badge";
+import ImagesClickableCarousel from "./ImagesClickableCarousel";
 
 const statuses: Status[] = ["APPROVED", "REJECTED"];
 
@@ -282,6 +284,7 @@ const QCQuestionTableData = ({
         <TableHead className="w-[50px]">Select</TableHead>
         <TableHead>Image</TableHead>
         <TableHead>Submitted By</TableHead>
+        <TableHead>Subject</TableHead>
         <TableHead
           onClick={() => handleSort("status")}
           className="cursor-pointer"
@@ -316,12 +319,12 @@ const QCQuestionTableData = ({
                   }}
                 />
               </TableCell>
-              <TableCell>
-                <S3ImageComponent url={question.imageS3Key} />
-              </TableCell>
+              <ImagesClickableCarousel question={question} />
+
               <TableCell>
                 {question.submittedBy?.name} ({question.submittedBy?.email})
               </TableCell>
+              <TableCell>{question.subject}</TableCell>
               <TableCell>{question.status}</TableCell>
               <TableCell>
                 {DateTime.fromJSDate(question.createdAt).toLocaleString(

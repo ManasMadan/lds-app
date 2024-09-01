@@ -13,19 +13,14 @@ import {
   updateQuestionStatus,
   getAdminQuestions,
 } from "@/lib/api/questions";
-import { Status } from "@prisma/client";
+import { Question, Status } from "@prisma/client";
 
 type SubmittedBy = {
   name: string;
   email: string;
 };
 
-export type QuestionSubmittedBy = {
-  id: string;
-  imageS3Key: string;
-  status: Status;
-  createdAt: Date;
-  reviewComment: string | null;
+export type QuestionSubmittedBy = Question & {
   submittedBy?: SubmittedBy;
 };
 
@@ -39,8 +34,13 @@ export function useCreateQuestion() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (params: { images: string[]; userId: string }) =>
-      uploadQuestions(params.images, params.userId),
+    mutationFn: (params: {
+      questionImages: string[];
+      answerImages: string[];
+      chatImages: string[];
+      userId: string;
+      subject: string;
+    }) => uploadQuestions(params),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questions"] });
     },

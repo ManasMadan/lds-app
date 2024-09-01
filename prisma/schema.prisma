@@ -60,9 +60,9 @@ model Session {
 
 model Question {
   id           String   @id @default(cuid())
-  questionImage  String
-  answerImage    String
-  chatImage      String
+  questionImages  String[]
+  answerImages    String[]
+  chatImages      String[]
   subject        String
   dateOfSolving  DateTime
   status       Status   @default(PENDING)

@@ -113,24 +113,34 @@ export async function deleteQuestions(ids: string[]) {
     select: {
       id: true,
       submittedById: true,
-      imageS3Key: true,
+      questionImages: true,
+      answerImages: true,
+      chatImages: true,
     },
   });
 
-  const s3DeletePromises = questionsToDelete.map(async (question) => {
-    const deleteCommand = new DeleteObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET_NAME!,
-      Key: question.imageS3Key,
-    });
+  const s3DeletePromises = questionsToDelete.flatMap((question) => {
+    const allImageKeys = [
+      ...question.questionImages,
+      ...question.answerImages,
+      ...question.chatImages,
+    ];
 
-    try {
-      await s3Client.send(deleteCommand);
-    } catch (error) {
-      console.error(
-        `Failed to delete S3 object for question ${question.id}:`,
-        error
-      );
-    }
+    return allImageKeys.map(async (key) => {
+      const deleteCommand = new DeleteObjectCommand({
+        Bucket: process.env.AWS_S3_BUCKET_NAME!,
+        Key: key,
+      });
+
+      try {
+        await s3Client.send(deleteCommand);
+      } catch (error) {
+        console.error(
+          `Failed to delete S3 object (${key}) for question ${question.id}:`,
+          error
+        );
+      }
+    });
   });
 
   await Promise.all(s3DeletePromises);
@@ -168,14 +178,23 @@ export async function deleteQuestions(ids: string[]) {
   }
 }
 
-export async function uploadQuestions(
-  images: string[],
-  userId: string
-): Promise<string[]> {
-  const uploadPromises = images.map(async (image, index) => {
+export async function uploadQuestions({
+  questionImages,
+  answerImages,
+  chatImages,
+  userId,
+  subject,
+}: {
+  questionImages: string[];
+  answerImages: string[];
+  chatImages: string[];
+  userId: string;
+  subject: string;
+}): Promise<string> {
+  const uploadImage = async (image: string, type: string, index: number) => {
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Data, "base64");
-    const key = `questions/${userId}/${Date.now()}-${index}.jpg`;
+    const key = `questions/${userId}/${type}-${Date.now()}-${index}.jpg`;
 
     const command = new PutObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME,
@@ -184,35 +203,51 @@ export async function uploadQuestions(
       ContentType: "image/jpeg",
     });
     await s3Client.send(command);
-    const question = await prisma.question.create({
-      data: {
-        imageS3Key: key,
-        submittedById: userId,
-        status: "PENDING",
-      },
-    });
-    return question.id;
-  });
+    return key;
+  };
 
-  const uploadedQuestionIds = await Promise.all(uploadPromises);
+  const uploadedQuestionImages = await Promise.all(
+    questionImages.map((image, index) => uploadImage(image, "question", index))
+  );
+
+  const uploadedAnswerImages = await Promise.all(
+    answerImages.map((image, index) => uploadImage(image, "answer", index))
+  );
+
+  const uploadedChatImages = await Promise.all(
+    chatImages.map((image, index) => uploadImage(image, "chat", index))
+  );
+
+  const question = await prisma.question.create({
+    data: {
+      questionImages: uploadedQuestionImages,
+      answerImages: uploadedAnswerImages,
+      chatImages: uploadedChatImages,
+      submittedById: userId,
+      subject: subject,
+      dateOfSolving: new Date(),
+      status: "PENDING",
+    },
+  });
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // Update or create the user's daily stats
   await prisma.userDailyStats.upsert({
     where: { date_userId_role: { date: today, userId: userId, role: "SME" } },
     update: {
-      questionsSubmitted: { increment: images.length },
+      questionsSubmitted: { increment: 1 },
     },
     create: {
       date: today,
       userId: userId,
       role: "SME",
-      questionsSubmitted: images.length,
+      questionsSubmitted: 1,
     },
   });
 
-  return uploadedQuestionIds;
+  return question.id;
 }
 
 export async function updateQuestionStatus(

@@ -28,6 +28,8 @@ import { DateTime } from "luxon";
 import { DateRange } from "react-day-picker";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import S3ImageComponent from "./S3ImageComponent";
+import { Badge } from "./ui/badge";
+import ImagesClickableCarousel from "./ImagesClickableCarousel";
 
 const statuses: Status[] = ["PENDING", "APPROVED", "REJECTED"];
 
@@ -234,6 +236,7 @@ const AdminQuestionsTableData = ({
         >
           Status {sortField === "status" && (sortOrder === "asc" ? "↑" : "↓")}
         </TableHead>
+        <TableHead>Subject</TableHead>
         <TableHead>Submitted By</TableHead>
         <TableHead>Reviewed By</TableHead>
         <TableHead
@@ -263,10 +266,9 @@ const AdminQuestionsTableData = ({
                   }}
                 />
               </TableCell>
-              <TableCell>
-                <S3ImageComponent url={question.imageS3Key} />
-              </TableCell>
+              <ImagesClickableCarousel question={question} />
               <TableCell>{question.status}</TableCell>
+              <TableCell>{question.subject}</TableCell>
               <TableCell>
                 {question.submittedBy?.name} ({question.submittedBy?.email})
               </TableCell>

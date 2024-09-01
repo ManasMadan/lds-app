@@ -12,19 +12,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   QuestionSubmittedBy,
   useQuestionsQC,
   useUpdateQuestionStatus,
 } from "@/hooks/useQuestions";
 import { SortField, SortOrder } from "@/lib/api/questions";
-import { Status, Question } from "@prisma/client";
 import { useDebounce } from "@/hooks/useDebounce";
 import Loader from "./Loader";
 import toast from "react-hot-toast";
@@ -33,6 +25,8 @@ import { DateRange } from "react-day-picker";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import S3ImageComponent from "./S3ImageComponent";
 import { CommentDialog } from "./Forms/CommentDialogForm";
+import { Badge } from "./ui/badge";
+import ImagesClickableCarousel from "./ImagesClickableCarousel";
 
 export function QCQuestionTable({
   reviewerId,
@@ -256,6 +250,7 @@ const QCQuestionTableData = ({
         <TableHead className="w-[50px]">Select</TableHead>
         <TableHead>Image</TableHead>
         <TableHead>Submitted By</TableHead>
+        <TableHead>Subject</TableHead>
         <TableHead
           onClick={() => handleSort("status")}
           className="cursor-pointer"
@@ -290,12 +285,12 @@ const QCQuestionTableData = ({
                   }}
                 />
               </TableCell>
-              <TableCell>
-                <S3ImageComponent url={question.imageS3Key} />
-              </TableCell>
+              <ImagesClickableCarousel question={question} />
+
               <TableCell>
                 {question.submittedBy?.name} ({question.submittedBy?.email})
               </TableCell>
+              <TableCell>{question.subject}</TableCell>
               <TableCell>{question.status}</TableCell>
               <TableCell>
                 {DateTime.fromJSDate(question.createdAt).toLocaleString(
