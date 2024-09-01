@@ -23,6 +23,7 @@ export async function createUser(inputs: CreateUserFormInputs) {
       name: inputs.name,
       password: hashed,
       role: inputs.role as Role,
+      teamId: inputs.teamId || undefined,
     },
   });
   if (user.role === "ADMIN" || user.role === "NONE") return user;
@@ -41,7 +42,7 @@ export async function createUser(inputs: CreateUserFormInputs) {
   return user;
 }
 
-export type SortField = "name" | "email" | "role" | "createdAt";
+export type SortField = "name" | "email" | "role" | "createdAt" | "teamId";
 export type SortOrder = "asc" | "desc";
 
 export async function getUsers({
@@ -51,6 +52,7 @@ export async function getUsers({
   sortOrder = "desc",
   searchTerm = "",
   role,
+  team,
 }: {
   page?: number;
   perPage?: number;
@@ -58,6 +60,7 @@ export async function getUsers({
   sortOrder?: SortOrder;
   searchTerm?: string;
   role?: Role;
+  team?: string;
 }) {
   const skip = (page - 1) * perPage;
   const take = perPage;
@@ -75,12 +78,19 @@ export async function getUsers({
     where.role = role;
   }
 
+  if (team) {
+    where.teamId = team;
+  }
+
   const [users, totalCount] = await Promise.all([
     prisma.user.findMany({
       where,
       skip,
       take,
       orderBy: { [sortField]: sortOrder },
+      include: {
+        team: true,
+      },
     }),
     prisma.user.count({ where }),
   ]);
@@ -110,10 +120,11 @@ export async function updateUser(
   if (!prevUser) {
     throw new Error("User not found");
   }
-  const updateData: Prisma.UserUpdateInput = {
+  const updateData: any = {
     name: data.name,
     email: data.email,
     role: data.role,
+    teamId: data.teamId || undefined,
   };
 
   if (data.password && data.password.trim() !== "") {

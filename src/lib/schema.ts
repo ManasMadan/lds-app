@@ -18,15 +18,7 @@ export const signUpSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   role: z.enum(userRoles),
-  teamId: z.string().optional(),
-});
-
-export const createTeamSchema = z.object({
-  name: z.string().min(2, "Team name must be at least 2 characters"),
-});
-
-export const editTeamSchema = z.object({
-  name: z.string().min(2, "Team name must be at least 2 characters"),
+  teamId: z.string().optional(), // Add teamId as optional
 });
 
 export const editUserSchema = z.object({
@@ -45,6 +37,14 @@ export const editUserSchema = z.object({
       invalid_type_error: "Invalid Role",
     })
     .default("NONE"),
+  teamId: z.string().optional(), // Add teamId as optional
+});
+export const createTeamSchema = z.object({
+  name: z.string().min(2, "Team name must be at least 2 characters"),
+});
+
+export const editTeamSchema = z.object({
+  name: z.string().min(2, "Team name must be at least 2 characters"),
 });
 
 import { Status } from "@prisma/client";

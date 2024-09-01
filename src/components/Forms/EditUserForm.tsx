@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/select";
 import { updateUser } from "@/lib/api/users";
 import { User } from "@prisma/client";
+import { useGetTeams } from "@/hooks/useTeams";
 
 interface EditUserFormProps {
   user: User | null;
@@ -38,6 +39,7 @@ interface EditUserFormProps {
 
 const EditUserForm: React.FC<EditUserFormProps> = ({ user, onClose }) => {
   const queryClient = useQueryClient();
+  const { data: teams, isLoading: teamsLoading } = useGetTeams();
 
   const form = useForm<EditUserFormInputs>({
     resolver: zodResolver(editUserSchema),
@@ -46,6 +48,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onClose }) => {
       email: user?.email || "",
       role: user?.role || "NONE",
       password: "",
+      teamId: user?.teamId || "",
     },
   });
 
@@ -56,6 +59,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onClose }) => {
         email: user.email || "",
         role: user.role || "NONE",
         password: "",
+        teamId: user.teamId || "",
       });
     }
   }, [user, form]);
@@ -85,6 +89,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onClose }) => {
         name: data.name,
         email: data.email,
         role: data.role,
+        teamId: data.teamId,
       };
 
       if (data.password && data.password.trim() !== "") {
@@ -168,6 +173,34 @@ const EditUserForm: React.FC<EditUserFormProps> = ({ user, onClose }) => {
                         {userRoles.map((role) => (
                           <SelectItem key={role} value={role}>
                             {role}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="teamId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Team</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={teamsLoading}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a team" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {teams?.map((team) => (
+                          <SelectItem key={team.id} value={team.id}>
+                            {team.name}
                           </SelectItem>
                         ))}
                       </SelectContent>

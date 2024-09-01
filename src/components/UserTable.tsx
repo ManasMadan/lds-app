@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { useUsers, useDeleteUsers } from "@/hooks/useUsers";
 import { SortField, SortOrder } from "@/lib/api/users";
-import { Role, User } from "@prisma/client";
+import { Role, Team, User } from "@prisma/client";
 import { useDebounce } from "@/hooks/useDebounce";
 import EditUserForm from "./Forms/EditUserForm";
 import Loader from "./Loader";
@@ -33,6 +33,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { DateTime } from "luxon";
+import { useGetTeams } from "@/hooks/useTeams";
 
 const roles: Role[] = ["NONE", "SME", "QC", "ADMIN"];
 
@@ -50,6 +51,8 @@ export function UserTable() {
   const perPage = 10;
 
   const debouncedSearchTerm = useDebounce(searchTerm, 1000);
+  const { data: teams, isLoading: teamsLoading } = useGetTeams();
+  const [team, setTeam] = useState<string | undefined>(undefined);
 
   const { data, isLoading } = useUsers({
     page,
@@ -58,7 +61,9 @@ export function UserTable() {
     sortOrder,
     searchTerm: debouncedSearchTerm,
     role,
+    team,
   });
+
   const deleteUsersMutation = useDeleteUsers();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -95,6 +100,7 @@ export function UserTable() {
     setSelectedUsers([]);
     setSearchTerm("");
     setRole(undefined);
+    setTeam(undefined);
     setSortField("createdAt");
     setSortOrder("desc");
     setPage(1);
@@ -120,9 +126,13 @@ export function UserTable() {
         selectedUsers={selectedUsers}
         reset={reset}
         searchTerm={searchTerm}
-        setRole={setRole}
-        role={role}
         setSearchTerm={setSearchTerm}
+        role={role}
+        setRole={setRole}
+        team={team}
+        setTeam={setTeam}
+        teams={teams || []}
+        teamsLoading={teamsLoading}
       />
 
       <UserTableData
@@ -161,6 +171,10 @@ const UserTableActions = ({
   setSearchTerm,
   role,
   setRole,
+  team,
+  setTeam,
+  teams,
+  teamsLoading,
 }: {
   handleDeleteSelected: () => void;
   selectedUsers: string[];
@@ -169,6 +183,10 @@ const UserTableActions = ({
   setSearchTerm: (value: string) => void;
   role: Role | undefined;
   setRole: (role: Role | undefined) => void;
+  team: string | undefined;
+  setTeam: (team: string | undefined) => void;
+  teams: Team[];
+  teamsLoading: boolean;
 }) => (
   <div className="mb-4 flex flex-col gap-y-4 md:flex-row justify-between items-center">
     <div className="flex gap-2">
@@ -188,13 +206,9 @@ const UserTableActions = ({
         className="max-w-sm"
       />
       <Select
-        value={role}
+        value={role || "ALL"}
         onValueChange={(value: string) => {
-          if (value === "ALL") {
-            setRole(undefined);
-          } else {
-            setRole(value as Role);
-          }
+          setRole(value === "ALL" ? undefined : (value as Role));
         }}
       >
         <SelectTrigger className="w-[180px]">
@@ -205,6 +219,25 @@ const UserTableActions = ({
           {roles.map((r) => (
             <SelectItem key={r} value={r}>
               {r}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Select
+        value={team || "ALL"}
+        onValueChange={(value: string) => {
+          setTeam(value === "ALL" ? undefined : value);
+        }}
+        disabled={teamsLoading}
+      >
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select Team" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="ALL">All</SelectItem>
+          {teams.map((t) => (
+            <SelectItem key={t.id} value={t.id}>
+              {t.name}
             </SelectItem>
           ))}
         </SelectContent>
@@ -255,6 +288,12 @@ const UserTableData = ({
           Role {sortField === "role" && (sortOrder === "asc" ? "↑" : "↓")}
         </TableHead>
         <TableHead
+          onClick={() => handleSort("teamId")}
+          className="cursor-pointer"
+        >
+          Team {sortField === "teamId" && (sortOrder === "asc" ? "↑" : "↓")}
+        </TableHead>
+        <TableHead
           onClick={() => handleSort("createdAt")}
           className="cursor-pointer"
         >
@@ -284,6 +323,8 @@ const UserTableData = ({
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.role}</TableCell>
+              {/* @ts-ignore */}
+              <TableCell>{user.team.name || "No Team"}</TableCell>
               <TableCell>
                 {DateTime.fromJSDate(user.createdAt).toLocaleString(
                   DateTime.DATETIME_SHORT

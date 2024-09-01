@@ -1,6 +1,13 @@
 // hooks/useTeam.ts
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { createTeam, fetchTeams, deleteTeams } from "@/lib/api/team";
+import { getTeams, createTeam, fetchTeams, deleteTeams } from "@/lib/api/team";
+
+export function useGetTeams() {
+  return useQuery({
+    queryKey: ["teams"],
+    queryFn: () => getTeams(),
+  });
+}
 
 export function useTeams({
   page,

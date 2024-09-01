@@ -60,3 +60,8 @@ export async function updateTeamName(teamId: string, newName: string) {
     data: { name: newName },
   });
 }
+
+export async function getTeams() {
+  const data = await prisma.team.findMany();
+  return data;
+}

@@ -54,7 +54,7 @@ const EditTeamForm: React.FC<EditTeamFormProps> = ({ team, onClose }) => {
     }: {
       id: string;
       data: Partial<EditTeamFormInputs>;
-    }) => updateTeamName(id, data.name),
+    }) => updateTeamName(id, data.name!),
     onError: (error) => {
       console.log(error);
       toast.error("Error Updating Team");

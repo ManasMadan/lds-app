@@ -17,6 +17,7 @@ export function useUsers({
   sortOrder,
   searchTerm,
   role,
+  team,
 }: {
   page: number;
   perPage: number;
@@ -24,14 +25,15 @@ export function useUsers({
   sortOrder: SortOrder;
   searchTerm: string;
   role?: Role;
+  team?: string;
 }) {
   return useQuery({
     queryKey: [
       "users",
-      { page, perPage, sortField, sortOrder, searchTerm, role },
+      { page, perPage, sortField, sortOrder, searchTerm, role, team },
     ],
     queryFn: () =>
-      getUsers({ page, perPage, sortField, sortOrder, searchTerm, role }),
+      getUsers({ page, perPage, sortField, sortOrder, searchTerm, role, team }),
   });
 }
 

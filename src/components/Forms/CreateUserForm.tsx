@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCreateUser } from "@/hooks/useUsers";
+import { useGetTeams } from "@/hooks/useTeams"; // Import the hook to fetch teams
 
 const CreateUserForm: React.FC = () => {
   const form = useForm<CreateUserFormInputs>({
@@ -37,6 +39,7 @@ const CreateUserForm: React.FC = () => {
   });
 
   const createUserMutation = useCreateUser();
+  const { data: teams, isLoading: teamsLoading } = useGetTeams();
 
   const onSubmit = (data: CreateUserFormInputs) => {
     createUserMutation.mutate(data, {
@@ -50,6 +53,7 @@ const CreateUserForm: React.FC = () => {
       },
     });
   };
+
   return (
     <Card className="w-[350px]">
       <CardHeader>
@@ -131,6 +135,34 @@ const CreateUserForm: React.FC = () => {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="teamId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Team</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={teamsLoading} // Disable dropdown while loading
+                    >
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Select a team" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {teams?.map((team) => (
+                          <SelectItem key={team.id} value={team.id}>
+                            {team.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button
@@ -138,6 +170,8 @@ const CreateUserForm: React.FC = () => {
                 form.reset({
                   email: "",
                   password: "",
+                  role: "NONE", // Reset role to default if needed
+                  teamId: "", // Reset team selection
                 });
               }}
               variant="outline"
@@ -148,7 +182,7 @@ const CreateUserForm: React.FC = () => {
             <Button
               className="mt-0"
               type="submit"
-              disabled={createUserMutation.isPending}
+              disabled={createUserMutation.isPending || teamsLoading} // Disable submit if loading
             >
               {createUserMutation.isPending ? "Creating User" : "Create User"}
             </Button>
