@@ -17,6 +17,7 @@ model UserDailyStats {
   questionsReviewed  Int     @default(0)
   questionsApproved  Int     @default(0)
   questionsRejected  Int     @default(0)
+  manualQuestionsSolved   Int      @default(0)
 
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt @default(now())
@@ -31,12 +32,23 @@ model User {
   password       String
   role           Role       @default(NONE)
   session        Session?
+  teamId             String?
+  team               Team?           @relation(fields: [teamId], references: [id])
   submittedQuestions Question[] @relation("SubmittedBy")
   reviewedQuestions  Question[] @relation("ReviewedBy")
   dailyStats     UserDailyStats[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt @default(now())
 }
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 
 model Session {
   id           String   @id @default(cuid())
@@ -48,7 +60,11 @@ model Session {
 
 model Question {
   id           String   @id @default(cuid())
-  imageS3Key   String
+  questionImage  String
+  answerImage    String
+  chatImage      String
+  subject        String
+  dateOfSolving  DateTime
   status       Status   @default(PENDING)
   submittedBy  User     @relation("SubmittedBy", fields: [submittedById], references: [id])
   submittedById String

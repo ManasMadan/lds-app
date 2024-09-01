@@ -1,5 +1,13 @@
 import { Role } from "@prisma/client";
-import { GitGraph, Home, Text, User2, UserPlus, Users } from "lucide-react";
+import {
+  GitGraph,
+  GroupIcon,
+  Home,
+  Text,
+  User2,
+  UserPlus,
+  Users,
+} from "lucide-react";
 
 export type Submenu = {
   href: string;
@@ -41,6 +49,24 @@ export function getMenuList(pathname: string): Group[] {
               label: "Edit Users",
               active: pathname === "/admin/edit-users",
               href: "/admin/edit-users",
+            },
+          ],
+          href: "/admin",
+        },
+        {
+          label: "Manage Teams",
+          active: false,
+          icon: GroupIcon,
+          submenus: [
+            {
+              label: "New Team",
+              active: pathname === "/admin/new-team",
+              href: "/admin/new-team",
+            },
+            {
+              label: "Edit Teams",
+              active: pathname === "/admin/edit-teams",
+              href: "/admin/edit-teams",
             },
           ],
           href: "/admin",

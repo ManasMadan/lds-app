@@ -14,14 +14,19 @@ export const userRoles: [Role, ...Role[]] = [
 ] as const;
 
 export const signUpSchema = z.object({
-  name: z.string().min(3, "Name is required"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-  role: z
-    .enum(userRoles, {
-      invalid_type_error: "Invalid Role",
-    })
-    .default("NONE"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(userRoles),
+  teamId: z.string().optional(),
+});
+
+export const createTeamSchema = z.object({
+  name: z.string().min(2, "Team name must be at least 2 characters"),
+});
+
+export const editTeamSchema = z.object({
+  name: z.string().min(2, "Team name must be at least 2 characters"),
 });
 
 export const editUserSchema = z.object({
@@ -53,3 +58,5 @@ export const questionStatuses: [Status, ...Status[]] = [
 export type CreateUserFormInputs = z.infer<typeof signUpSchema>;
 export type SignInFormInputs = z.infer<typeof signInSchema>;
 export type EditUserFormInputs = z.infer<typeof editUserSchema>;
+export type CreateTeamFormInputs = z.infer<typeof createTeamSchema>;
+export type EditTeamFormInputs = z.infer<typeof editTeamSchema>;
