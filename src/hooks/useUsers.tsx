@@ -9,6 +9,7 @@ import {
   createUser,
 } from "@/lib/api/users";
 import { Role, User } from "@prisma/client";
+import { EditUserFormInputs } from "@/lib/schema";
 
 export function useUsers({
   page,
@@ -51,7 +52,7 @@ export function useUpdateUser() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<User> }) =>
-      updateUser(id, data),
+      updateUser(id, data as EditUserFormInputs),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
