@@ -17,6 +17,24 @@ import Image from "next/image";
 import { useCreateQuestion } from "@/hooks/useQuestions";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+
+const SUBJECTS = [
+  "Mathematics",
+  "Physics",
+  "Chemistry",
+  "Botany",
+  "Zoology",
+  "Science",
+  "English",
+  "Logical Reasoning",
+];
 
 export default function QuestionsUploader({ userId }: { userId: string }) {
   const [showDialog, setShowDialog] = useState<boolean>(false);
@@ -43,6 +61,7 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
   ) => {
     const files = e.target.files;
     if (!files) return;
+    const fileLen = files.length;
 
     const newImages: string[] = [];
     for (let i = 0; i < files.length; i++) {
@@ -50,7 +69,7 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
       const reader = new FileReader();
       reader.onload = () => {
         newImages.push(reader.result as string);
-        if (newImages.length === files.length) {
+        if (newImages.length === fileLen) {
           switch (type) {
             case "question":
               setQuestionImages((prev) => [...prev, ...newImages]);
@@ -201,12 +220,21 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
           </div>
         ))}
 
-        <Input
-          type="text"
-          placeholder="Subject"
+        <Select
           value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-        />
+          onValueChange={(value: string) => setSubject(value)}
+        >
+          <SelectTrigger className="w-[280px]">
+            <SelectValue placeholder="Select Subject" />
+          </SelectTrigger>
+          <SelectContent>
+            {SUBJECTS.map((s) => (
+              <SelectItem key={s} value={s}>
+                {s}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button
