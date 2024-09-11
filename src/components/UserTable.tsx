@@ -323,8 +323,10 @@ const UserTableData = ({
               <TableCell>{user.name}</TableCell>
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.role}</TableCell>
-              {/* @ts-ignore */}
-              <TableCell>{user.team.name || "No Team"}</TableCell>
+              <TableCell>
+                {/* @ts-ignore */}
+                {(user.team && user.team.name) || "No Team"}
+              </TableCell>
               <TableCell>
                 {DateTime.fromJSDate(user.createdAt).toLocaleString(
                   DateTime.DATETIME_SHORT
