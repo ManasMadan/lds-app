@@ -195,7 +195,7 @@ const SMEQuestionTableActions = ({
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
-        <Select
+        {/* <Select
           value={status}
           onValueChange={(value: string) => {
             if (value === "ALL") {
@@ -216,7 +216,7 @@ const SMEQuestionTableActions = ({
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
+        </Select> */}
       </div>
 
       <DateRangePicker
@@ -289,7 +289,7 @@ const SMEQuestionTableData = ({
 
               <ImagesClickableCarousel question={question} />
 
-              <TableCell>{question.status}</TableCell>
+              <TableCell>{"PENDING"}</TableCell>
               <TableCell>
                 {DateTime.fromJSDate(question.createdAt).toLocaleString(
                   DateTime.DATETIME_SHORT
