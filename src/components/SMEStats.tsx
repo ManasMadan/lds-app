@@ -104,19 +104,19 @@ export default function SMEStats({ smeId }: { smeId: string }) {
                 Total Questions Submitted
               </h3>
               <p className="text-3xl font-bold">
-                {data.smePerformance.totalQuestionsSubmitted}
+                {data?.smePerformance?.totalQuestionsSubmitted}
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold">Approval Rate</h3>
               <p className="text-3xl font-bold">
-                {(data.smePerformance.approvalRate * 100).toFixed(2)}%
+                {(data?.smePerformance?.approvalRate * 100).toFixed(2)}%
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold">Rejection Rate</h3>
               <p className="text-3xl font-bold">
-                {(data.smePerformance.rejectionRate * 100).toFixed(2)}%
+                {(data?.smePerformance?.rejectionRate * 100).toFixed(2)}%
               </p>
             </div>
           </div>
@@ -134,19 +134,19 @@ export default function SMEStats({ smeId }: { smeId: string }) {
                 Total Questions Submitted
               </h3>
               <p className="text-3xl font-bold">
-                {data.systemStats.totalQuestionsSubmitted}
+                {data?.systemStats?.totalQuestionsSubmitted}
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold">Overall Approval Rate</h3>
               <p className="text-3xl font-bold">
-                {(data.systemStats.approvalRate * 100).toFixed(2)}%
+                {(data?.systemStats?.approvalRate * 100).toFixed(2)}%
               </p>
             </div>
             <div>
               <h3 className="text-lg font-semibold">Overall Rejection Rate</h3>
               <p className="text-3xl font-bold">
-                {(data.systemStats.rejectionRate * 100).toFixed(2)}%
+                {(data?.systemStats?.rejectionRate * 100).toFixed(2)}%
               </p>
             </div>
           </div>

@@ -58,13 +58,13 @@ export default function SMEHomePageStats({ smeId }: { smeId: string }) {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            {stats.totalQuestionsSubmitted}
+            {stats?.totalQuestionsSubmitted}
           </div>
           <p className="text-xs text-muted-foreground">
             Total questions submitted
           </p>
           <div className="mt-4 text-2xl font-bold">
-            {stats.avgQuestionsPerDay}
+            {stats?.avgQuestionsPerDay}
           </div>
           <p className="text-xs text-muted-foreground">
             Average questions per day this month

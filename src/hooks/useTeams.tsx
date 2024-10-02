@@ -9,7 +9,24 @@ export function useGetTeams() {
   });
 }
 
-export function useTeams({
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Fetches teams from the API and stores them in the React Query cache.
+ *
+ * The results are paginated, and the cache key is based on the pagination
+ * parameters and any search terms.
+ *
+ * @param {Object} options An object containing the following properties:
+ * - page: The page of results to fetch. Defaults to 1.
+ * - perPage: The number of results to fetch per page. Defaults to 10.
+ * - sortField: The field to sort the results by. Defaults to 'name'.
+ * - sortOrder: The order to sort the results in. Defaults to 'asc'.
+ * - searchTerm: A search term to filter the results by. Defaults to ''.
+ *
+ * @returns {UseQueryResult} An object containing the query results and other
+ * information about the query.
+ */
+/******  cea7180c-55dc-4e7a-b649-8c707861f069  *******/ export function useTeams({
   page,
   perPage,
   sortField,

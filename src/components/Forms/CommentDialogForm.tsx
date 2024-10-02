@@ -7,7 +7,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { REJECTION_REASONS } from "@/constants/qc_rejection_reasons";
 
 type CommentDialogProps = {
   isOpen: boolean;
@@ -22,11 +22,11 @@ export function CommentDialog({
   onConfirm,
   action,
 }: CommentDialogProps) {
-  const [comment, setComment] = useState("");
+  const [selectedComment, setSelectedComment] = useState("");
 
   const handleConfirm = () => {
-    onConfirm(comment);
-    setComment("");
+    onConfirm(selectedComment);
+    setSelectedComment("");
   };
 
   return (
@@ -37,12 +37,21 @@ export function CommentDialog({
             {action === "APPROVED" ? "Approve" : "Reject"} Questions
           </DialogTitle>
         </DialogHeader>
-        <Textarea
-          placeholder="Enter your comment..."
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          rows={4}
-        />
+        {/* Replace Textarea with a select dropdown */}
+        <select
+          value={selectedComment}
+          onChange={(e) => setSelectedComment(e.target.value)}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        >
+          <option value="" disabled>
+            Select an option
+          </option>
+          {REJECTION_REASONS.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
         <DialogFooter>
           <Button onClick={onClose} variant="outline">
             Cancel
