@@ -1,0 +1,89 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model UserDailyStats {
+  id                String   @id @default(cuid())
+  date              DateTime
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  role              Role
+  questionsSubmitted Int     @default(0)
+  questionsReviewed  Int     @default(0)
+  questionsApproved  Int     @default(0)
+  questionsRejected  Int     @default(0)
+  manualQuestionsSolved   Int      @default(0)
+
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt @default(now())
+
+  @@unique([date, userId, role])
+}
+
+model User {
+  id             String     @id @default(cuid())
+  name           String
+  email          String     @unique
+  password       String
+  role           Role       @default(NONE)
+  session        Session?
+  teamId             String?
+  team               Team?           @relation(fields: [teamId], references: [id])
+  submittedQuestions Question[] @relation("SubmittedBy")
+  reviewedQuestions  Question[] @relation("ReviewedBy")
+  dailyStats     UserDailyStats[]
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt @default(now())
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String   @unique
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Question {
+  id           String   @id @default(cuid())
+  questionImages  String[]
+  answerImages    String[]
+  chatImages      String[]
+  subject        String
+  dateOfSolving  DateTime
+  status       Status   @default(PENDING)
+  submittedBy  User     @relation("SubmittedBy", fields: [submittedById], references: [id])
+  submittedById String
+  reviewedBy   User?    @relation("ReviewedBy", fields: [reviewedById], references: [id])
+  reviewedById String?
+  reviewComment String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt() @default(now())
+}
+
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Role {
+  NONE
+  SME
+  QC
+  ADMIN
+}
