@@ -250,7 +250,7 @@ const QCQuestionTableData = ({
         <TableHead className="w-[50px]">Select</TableHead>
         <TableHead>Image</TableHead>
         <TableHead>Submitted By</TableHead>
-        <TableHead>Subject</TableHead>
+        {/* <TableHead>Subject</TableHead> */}
         <TableHead
           onClick={() => handleSort("status")}
           className="cursor-pointer"
@@ -290,7 +290,7 @@ const QCQuestionTableData = ({
               <TableCell>
                 {question.submittedBy?.name} ({question.submittedBy?.email})
               </TableCell>
-              <TableCell>{question.subject}</TableCell>
+              {/* <TableCell>{question.subject}</TableCell> */}
               <TableCell>{question.status}</TableCell>
               <TableCell>
                 {DateTime.fromJSDate(question.createdAt).toLocaleString(

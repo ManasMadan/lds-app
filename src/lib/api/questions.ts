@@ -183,13 +183,13 @@ export async function uploadQuestions({
   answerImages,
   chatImages,
   userId,
-  subject,
-}: {
+}: // subject,
+{
   questionImages: string[];
   answerImages: string[];
   chatImages: string[];
   userId: string;
-  subject: string;
+  // subject: string;
 }): Promise<string> {
   const uploadImage = async (image: string, type: string, index: number) => {
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
@@ -224,7 +224,7 @@ export async function uploadQuestions({
       answerImages: uploadedAnswerImages,
       chatImages: uploadedChatImages,
       submittedById: userId,
-      subject: subject,
+      // subject: subject,
       dateOfSolving: new Date(),
       status: "PENDING",
     },

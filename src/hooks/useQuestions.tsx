@@ -39,7 +39,7 @@ export function useCreateQuestion() {
       answerImages: string[];
       chatImages: string[];
       userId: string;
-      subject: string;
+      // subject: string;
     }) => uploadQuestions(params),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questions"] });

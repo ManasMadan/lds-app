@@ -63,7 +63,7 @@ model Question {
   questionImages  String[]
   answerImages    String[]
   chatImages      String[]
-  subject        String
+  subject        String?
   dateOfSolving  DateTime
   status       Status   @default(PENDING)
   submittedBy  User     @relation("SubmittedBy", fields: [submittedById], references: [id])

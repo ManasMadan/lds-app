@@ -40,12 +40,12 @@ export default function ImagesClickableCarousel({
 
       {/* Modal with Carousel */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-screen-lg">
-          <Carousel className="w-full">
+        <DialogContent className="max-w-screen">
+          <Carousel className="w-[90vw] mx-auto">
             <CarouselContent>
               {allImages.map((image, index) => (
                 <CarouselItem key={index}>
-                  <div className="flex justify-center items-center p-4">
+                  <div className="flex h-[90vh] justify-center items-center p-4">
                     <BigS3ImageComponent url={image} />
                   </div>
                 </CarouselItem>
@@ -69,5 +69,9 @@ function BigS3ImageComponent({ url }: { url: string }) {
         <Loader />
       </div>
     );
-  return <Image src={res.data} alt="Question" width={700} height={700} />;
+  return (
+    <div className="max-w-screen max-h-screen relative w-full h-full min-w-[200px] min-h-[200px]">
+      <Image src={res.data} alt="Question" fill objectFit="contain" />
+    </div>
+  );
 }

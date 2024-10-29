@@ -25,16 +25,16 @@ import {
   SelectValue,
 } from "./ui/select";
 
-const SUBJECTS = [
-  "Mathematics",
-  "Physics",
-  "Chemistry",
-  "Botany",
-  "Zoology",
-  "Science",
-  "English",
-  "Logical Reasoning",
-];
+// const SUBJECTS = [
+//   "Mathematics",
+//   "Physics",
+//   "Chemistry",
+//   "Botany",
+//   "Zoology",
+//   "Science",
+//   "English",
+//   "Logical Reasoning",
+// ];
 
 export default function QuestionsUploader({ userId }: { userId: string }) {
   const [showDialog, setShowDialog] = useState<boolean>(false);
@@ -44,7 +44,7 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
   const [questionImages, setQuestionImages] = useState<string[]>([]);
   const [answerImages, setAnswerImages] = useState<string[]>([]);
   const [chatImages, setChatImages] = useState<string[]>([]);
-  const [subject, setSubject] = useState<string>("");
+  // const [subject, setSubject] = useState<string>("");
 
   const inputRefs = {
     question: useRef<HTMLInputElement>(null),
@@ -115,7 +115,7 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
         answerImages: answerImages,
         chatImages: chatImages,
         userId,
-        subject,
+        // subject,
       },
       {
         onSuccess: () => {
@@ -123,7 +123,7 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
           setQuestionImages([]);
           setAnswerImages([]);
           setChatImages([]);
-          setSubject("");
+          // setSubject("");
           router.refresh(); // If you want to refresh the page or trigger a state update
         },
         onError: (error) => {
@@ -172,7 +172,7 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
               <Input
                 ref={inputRefs[type as "question" | "answer" | "chat"]}
                 type="file"
-                accept="image/jpeg"
+                accept="image/*"
                 multiple
                 onChange={(e) =>
                   handleFileUpload(type as "question" | "answer" | "chat", e)
@@ -220,7 +220,7 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
           </div>
         ))}
 
-        <Select
+        {/* <Select
           value={subject}
           onValueChange={(value: string) => setSubject(value)}
         >
@@ -234,7 +234,7 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
+        </Select> */}
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button
@@ -243,7 +243,7 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
             setQuestionImages([]);
             setAnswerImages([]);
             setChatImages([]);
-            setSubject("");
+            // setSubject("");
           }}
         >
           Cancel
@@ -254,8 +254,8 @@ export default function QuestionsUploader({ userId }: { userId: string }) {
             createQuestion.isPending ||
             questionImages.length === 0 ||
             answerImages.length === 0 ||
-            chatImages.length === 0 ||
-            !subject
+            chatImages.length === 0
+            // || !subject
           }
         >
           {createQuestion.isPending ? "Uploading..." : "Upload"}
